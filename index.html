@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Home.zpath.xyz</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <style>
+    .el-table__row{
+        cursor: pointer;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <el-container>
+            <el-main>
+                <el-button @click="goBack" v-show="showBack" size="mini" type="warning">返回</el-button>
+                <el-table :data="fileList" @row-click="rowClick" v-if="!isFile">
+                    <el-table-column prop="name" label="名称">
+                        <template slot-scope="scope">
+                            <span>
+                                <i class='el-icon-folder' v-if="scope.row.type == 'directory'"
+                                    style="color:yellow;"></i>
+                                <i class="el-icon-collection" v-else style="color: blue;"></i>
+                                {{ scope.row.name }}
+                            </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="mtime" label="修改日期"></el-table-column>
+                    <el-table-column prop="size" label="大小">
+                        <template slot-scope="scope">{{ scope.row.size|formatBytes }}</template>
+                    </el-table-column>
+                </el-table>
+                <div v-else>
+                    <el-row>
+                        <el-col :span="8">&nbsp;</el-col>
+                        <el-col :span="8">
+                            <span style="text-align: center;display: block;">{{ file }}</span>
+                            <span style="text-align: center;display: block;">
+                                <el-button type="primary" @click="download" icon=el-icon-download>下载</el-button>
+                            </span>
+                        </el-col>
+                        <el-col :span="8">&nbsp;</el-col>
+                    </el-row>
+                </div>
+            </el-main>
+        </el-container>
+    </div>
+</body>
+
+<script src="static/main.js"></script>
+
+</html>
