@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>File Explorer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
@@ -25,6 +26,7 @@
             <el-main>
                 <el-button @click="goBack" v-show="showBack" size="mini" type="success" class="el-icon-caret-left">Back
                 </el-button>
+                <el-divider></el-divider>
                 <el-table :data="fileList" @row-click="rowClick" v-if="!isFile">
                     <el-table-column prop="name" label="Name" sortable sort-by="['type', 'name']">
                         <template slot-scope="scope">
@@ -45,8 +47,8 @@
                 </el-table>
                 <div v-else>
                     <el-row>
-                        <el-col :span="8">&nbsp;</el-col>
-                        <el-col :span="8">
+                        <el-col :span="4">&nbsp;</el-col>
+                        <el-col :span="16">
                             <el-tag style="margin: 3px;" type="success"><span style="color:black;">Name:
                                 </span>{{ file.name }}</el-tag>
                             <el-tag style="margin: 3px;" type="primary"><span style="color:black;">Size:
@@ -59,13 +61,14 @@
                                 size="small">
                                 <template slot="prepend">Link:</template>
                             </el-input>
+                            <el-divider></el-divider>
                             <div style="text-align: center;margin-top:10px;">
                                 <el-button type="primary" @click="download" icon=el-icon-download>
                                     Download
                                 </el-button>
                             </div>
                         </el-col>
-                        <el-col :span="8">&nbsp;</el-col>
+                        <el-col :span="4">&nbsp;</el-col>
                     </el-row>
                 </div>
             </el-main>
