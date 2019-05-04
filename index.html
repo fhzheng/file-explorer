@@ -55,7 +55,7 @@
                             <el-tag style="margin: 3px;" type="warning"><span style="color:black;">Time:
                                 </span>{{ file.mtime|formatTime }}
                             </el-tag>
-                            <el-input readonly="true" style="margin: 3px;" placeholder="Download link" v-model="downloadLink()"
+                            <el-input :readonly="true" style="margin: 3px;" placeholder="Download link" v-model="downloadLink()"
                                 size="small">
                                 <template slot="prepend">Link:</template>
                             </el-input>
