@@ -81,7 +81,13 @@ const app = new Vue({
             displayContent()
         },
         download: function () {
-            window.open(pm.build()[0])
+            const a = document.createElement('a');
+            a.target="_blank";
+            a.href=pm.build()[0];
+            a.click();
+        },
+        downloadLink: function(){
+            return window.location.protocol + '//' + window.location.host + pm.build()[0]
         },
         sortTime: function (a, b) {
             a = app.$options.filters.formatTime(a.mtime, false, false)
