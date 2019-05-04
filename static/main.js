@@ -116,7 +116,7 @@ const app = new Vue({
                 result = new Date(timevalue)
             }
             TIME_FILTER_CACHE[timevalue] = result
-            if (format) return result.toLocaleString()
+            if (format) return result.toLocaleString(undefined, {hour12: false, hourCycle: "h24"})
             else return result
         }
     }
