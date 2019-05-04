@@ -60,17 +60,14 @@ var default_file = {
     size: 0,
 }
 const router = new VueRouter({})
-router.beforeRouteLeave = function (to, from, next) {
-    debugger
-    console.log(to, from, next)
-    next()
-}
+const TIME_FILTER_CACHE = {}
+const SIZE_FILTER_CACHE = {}
 const app = new Vue({
     router: router,
     data: {
         showBack: false,
         isFile: false,
-        file: undefined,
+        file: {},
         fileList: [
         ],
     },
@@ -80,30 +77,51 @@ const app = new Vue({
             displayContent()
         },
         goBack: function () {
-            console.log('goback')
             router.push(pm.pop())
             displayContent()
         },
         download: function () {
             window.open(pm.build()[0])
-        }
+        },
+        sortTime: function (a, b) {
+            a = app.$options.filters.formatTime(a.mtime, false, false)
+            b = app.$options.filters.formatTime(b.mtime, false, false)
+            if (a > b) return 1
+            else return -1
+        },
     },
     filters: {
         formatBytes: function (bytes, decimals = 2) {
             if (bytes === 0 || !bytes) return '-';
 
+            if (bytes in SIZE_FILTER_CACHE) return SIZE_FILTER_CACHE[bytes]
             const k = 1024;
             const dm = decimals < 0 ? 0 : decimals;
             const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
             const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+            const result = parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+            SIZE_FILTER_CACHE[bytes] = result
+            return result
+        },
+        formatTime: function (timevalue, isTimestamp = true, format = true) {
+            if (timevalue == '' || !timevalue) return '-'
+            var result = undefined
+            if (timevalue in TIME_FILTER_CACHE) result = TIME_FILTER_CACHE[timevalue]
+            if (isTimestamp) {
+                result = new Date(timevalue * 1000)
+            }
+            else {
+                result = new Date(timevalue)
+            }
+            TIME_FILTER_CACHE[timevalue] = result
+            if (format) return result.toLocaleString()
+            else return result
         }
     }
 }).$mount('#app')
 var pm = new PathManger(router.history.current.fullPath)
-console.log(pm)
 displayContent()
 function displayContent() {
     const ps = pm.build()
@@ -123,9 +141,21 @@ function displayContent() {
         })
     }
     else {
-        app.showBack = true
-        app.isFile = true
-        app.file = decodeURI(last_part.part)
+        axios.get('/files/.meta' + path.substring('/files'.length, path.length) + '.json', { responseType: 'json' }).then(function (resp) {
+            const data = resp.data
+            app.showBack = true
+            app.isFile = true
+            app.file = data
+        }).catch(function (e) {
+            console.error(e)
+            app.showBack = true
+            app.isFile = true
+            app.file = {
+                size: undefined,
+                mtime: undefined,
+                name: decodeURI(last_part.part)
+            }
+        })
     }
 }
 window.onpopstate = function (event) {
